@@ -889,6 +889,8 @@ CVAPI(void) vector_Mat_delete(std::vector<cv::Mat>* vector)
 }
 #pragma endregion
 
+#ifndef WITHOUT_ML
+
 #pragma region cv::ml::DTrees::Node
 CVAPI(std::vector<cv::ml::DTrees::Node>*) vector_DTrees_Node_new1()
 {
@@ -942,5 +944,6 @@ CVAPI(void) vector_DTrees_Split_delete(std::vector<cv::ml::DTrees::Split> *vecto
     delete vector;
 }
 #pragma endregion
+#endif //#ifndef WITHOUT_ML
 
 #endif

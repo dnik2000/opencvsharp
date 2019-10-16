@@ -3,7 +3,26 @@ cmake_minimum_required(VERSION 3.0)
 include_directories(${OpenCV_INCLUDE_DIR})
 link_directories(${OpenCV_LIBRARY_DIR} ${OpenCV_LIBRARIES})
 
+
 file(GLOB OPENCVSHARP_FILES *.cpp)
+message("OPENCV FILES = " ${OPENCVSHARP_FILES})
+
+list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/aruco.cpp$")
+add_definitions(-DWITHOUT_ARUCO)
+
+list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/dnn.cpp$")
+add_definitions(-DWITHOUT_DNN)
+list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/face.cpp$")
+add_definitions(-DWITHOUT_FACE)
+list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/ml.cpp$")
+add_definitions(-DWITHOUT_ML)
+list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/quality.cpp$")
+add_definitions(-DWITHOUT_QUALITY)
+list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/text.cpp$")
+add_definitions(-DWITHOUT_TEXT)
+list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/xphoto.cpp$")
+add_definitions(-DWITHOUT_XPHOTO)
+message("OPENCV FILES = " ${OPENCVSHARP_FILES})
 
 find_package(OpenCV REQUIRED)
 

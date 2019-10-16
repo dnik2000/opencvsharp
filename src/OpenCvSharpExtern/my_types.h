@@ -384,7 +384,7 @@ static MyDMatch c(const cv::DMatch d)
     ret.distance = d.distance;
     return ret;
 }
-
+#ifndef WITHOUT_ARUCO
 static cv::aruco::DetectorParameters cpp(const aruco_DetectorParameters p)
 {
     cv::aruco::DetectorParameters pp;
@@ -435,5 +435,5 @@ static aruco_DetectorParameters c(const cv::aruco::DetectorParameters &p)
     pp.errorCorrectionRate = p.errorCorrectionRate;
     return pp;
 }
-
+#endif //WITHOUT_ARUCO
 #endif

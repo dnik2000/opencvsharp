@@ -26,18 +26,30 @@
 #include <opencv2/video.hpp>
 
 // opencv_contrib
+#ifndef WITHOUT_ARUCO
 #include <opencv2/aruco.hpp>
+#endif //WITHOUT_ARUCO
 #include <opencv2/bgsegm.hpp>
+#ifndef WITHOUT_DNN
 #include <opencv2/dnn.hpp>
+#endif //WITHOUT_DNN
+#ifndef WITHOUT_FACE
 #include <opencv2/face.hpp>
+#endif //WITHOUT_FACE
 #include <opencv2/img_hash.hpp>
 #include <opencv2/optflow.hpp>
 #include <opencv2/tracking.hpp>
 #include <opencv2/xfeatures2d.hpp>
 #include <opencv2/ximgproc.hpp>
+#ifndef WITHOUT_XPHOTO
 #include <opencv2/xphoto.hpp>
+#endif 
+#ifndef WITHOUT_TEXT
 #include <opencv2/text.hpp>
+#endif
+#ifndef WITHOUT_QUALITY
 #include <opencv2/quality.hpp>
+#endif
 
 #include <vector>
 #include <algorithm>
