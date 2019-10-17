@@ -28,19 +28,31 @@
 // opencv_contrib
 #ifndef WITHOUT_ARUCO
 #include <opencv2/aruco.hpp>
-#endif //WITHOUT_ARUCO
+#endif 
+#ifndef WITHOUT_BGSEGM
 #include <opencv2/bgsegm.hpp>
+#endif 
 #ifndef WITHOUT_DNN
 #include <opencv2/dnn.hpp>
-#endif //WITHOUT_DNN
+#endif 
 #ifndef WITHOUT_FACE
 #include <opencv2/face.hpp>
-#endif //WITHOUT_FACE
+#endif 
+#ifndef WITHOUT_IMG_HASH
 #include <opencv2/img_hash.hpp>
+#endif 
+#ifndef WITHOUT_OPTFLOW
 #include <opencv2/optflow.hpp>
+#endif 
+#ifndef WITHOUT_TRACKING
 #include <opencv2/tracking.hpp>
+#endif 
+#ifndef WITHOUT_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
+#endif 
+#ifndef WITHOUT_XIMGPROC
 #include <opencv2/ximgproc.hpp>
+#endif
 #ifndef WITHOUT_XPHOTO
 #include <opencv2/xphoto.hpp>
 #endif 
