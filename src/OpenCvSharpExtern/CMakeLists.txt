@@ -87,6 +87,7 @@ if(OpenCV_FOUND)
 	if(NOT WITH_opencv_xphoto)
 	list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/xphoto.cpp$")
 	add_definitions(-DWITHOUT_XPHOTO)
+	endif()
 	
 	include_directories(${OpenCV_INCLUDE_DIRS})
 	#set(LIBS ${LIBS} ${OpenCV_LIBRARIES})
