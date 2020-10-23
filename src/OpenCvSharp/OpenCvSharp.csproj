@@ -18,6 +18,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Version>4.5.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -65,5 +66,7 @@
   <PropertyGroup>
     <NoWarn>1701;1702;CA1303;CA1707;CA1814;CA1401;CA1720;</NoWarn>
   </PropertyGroup>
+
+  <!-- <Target Name="PackageDebian" DependsOnTargets="CreateDeb" Outputs="$(DebPath)"/> -->
 
 </Project>
