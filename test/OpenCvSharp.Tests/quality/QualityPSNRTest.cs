@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenCvSharp.Quality;
+﻿using OpenCvSharp.Quality;
 using Xunit;
 
 #pragma warning disable 162
@@ -20,9 +18,9 @@ namespace OpenCvSharp.Tests.Quality
                 Cv2.GaussianBlur(refImage, targetImage, new Size(5, 5), 15);
 
                 var value = psnr.Compute(targetImage);
-                Assert.Equal(28.813382, value[0], 6);
-                Assert.Equal(28.171064, value[1], 6);
-                Assert.Equal(30.828286, value[2], 6);
+                Assert.Equal(28.893586, value[0], 6);
+                Assert.Equal(28.26987, value[1], 6);
+                Assert.Equal(31.088282, value[2], 6);
             }
         }
 
@@ -35,9 +33,9 @@ namespace OpenCvSharp.Tests.Quality
                 Cv2.GaussianBlur(refImage, targetImage, new Size(5, 5), 15);
 
                 var value = QualityPSNR.Compute(refImage, targetImage, null);
-                Assert.Equal(28.813382, value[0], 6);
-                Assert.Equal(28.171064, value[1], 6);
-                Assert.Equal(30.828286, value[2], 6);
+                Assert.Equal(28.893586, value[0], 6);
+                Assert.Equal(28.26987, value[1], 6);
+                Assert.Equal(31.088282, value[2], 6);
             }
         }
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OpenCvSharp.Blob
 {
@@ -8,7 +6,7 @@ namespace OpenCvSharp.Blob
     /// Render mode of cvRenderTracks
     /// </summary>
     [Flags]
-    public enum RenderTracksMode : ushort
+    public enum RenderTracksModes
     {
         /// <summary>
         /// No flags

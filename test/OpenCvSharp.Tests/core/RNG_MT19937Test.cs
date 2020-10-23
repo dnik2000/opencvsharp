@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace OpenCvSharp.Tests.Core
 {
+    #pragma warning disable CA1707
+
     // ReSharper disable once InconsistentNaming
     public class RNG_MT19937Test : TestBase
     {

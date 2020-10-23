@@ -5,6 +5,7 @@ namespace OpenCvSharp.Quality
     /// <summary>
     /// Full reference mean square error algorithm  https://en.wikipedia.org/wiki/Mean_squared_error
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public class QualityMSE : QualityBase
     {
         private Ptr? ptrObj;
@@ -13,7 +14,6 @@ namespace OpenCvSharp.Quality
         /// Creates instance by raw pointer
         /// </summary>
         protected QualityMSE(IntPtr p)
-            : base()
         {
             ptrObj = new Ptr(p);
             ptr = ptrObj.Get();
@@ -30,7 +30,9 @@ namespace OpenCvSharp.Quality
                 throw new ArgumentNullException(nameof(@ref));
             @ref.ThrowIfDisposed();
 
-            var ptr = NativeMethods.quality_createQualityMSE(@ref.CvPtr);
+            NativeMethods.HandleException(
+                NativeMethods.quality_createQualityMSE(@ref.CvPtr, out var ptr));
+
             GC.KeepAlive(@ref);
             return new QualityMSE(ptr);
         }
@@ -55,7 +57,9 @@ namespace OpenCvSharp.Quality
             cmp.ThrowIfDisposed();
             qualityMap?.ThrowIfNotReady();
 
-            var ret = NativeMethods.quality_QualityMSE_staticCompute(@ref.CvPtr, cmp.CvPtr, qualityMap?.CvPtr ?? IntPtr.Zero);
+            NativeMethods.HandleException(
+                NativeMethods.quality_QualityMSE_staticCompute(
+                    @ref.CvPtr, cmp.CvPtr, qualityMap?.CvPtr ?? IntPtr.Zero, out var ret));
 
             GC.KeepAlive(@ref);
             GC.KeepAlive(cmp);
@@ -81,14 +85,16 @@ namespace OpenCvSharp.Quality
 
             public override IntPtr Get()
             {
-                var res = NativeMethods.quality_Ptr_QualityMSE_get(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.quality_Ptr_QualityMSE_get(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
 
             protected override void DisposeUnmanaged()
             {
-                NativeMethods.quality_Ptr_QualityMSE_delete(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.quality_Ptr_QualityMSE_delete(ptr));
                 base.DisposeUnmanaged();
             }
         }

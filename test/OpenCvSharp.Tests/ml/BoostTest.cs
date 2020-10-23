@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using OpenCvSharp;
 using OpenCvSharp.ML;
 using Xunit;
 
@@ -24,7 +22,7 @@ namespace OpenCvSharp.Tests.ML
             int[] trainLabelsData = { +1, -1, +1, -1 };
             var trainLabels = new Mat(4, 1, MatType.CV_32S, trainLabelsData);
 
-            var model = Boost.Create();
+            using var model = Boost.Create();
             model.MaxDepth = 1;
             model.UseSurrogates = false;
             model.Train(trainFeatures, SampleTypes.RowSample, trainLabels);
@@ -71,8 +69,14 @@ namespace OpenCvSharp.Tests.ML
             //Console.WriteLine(content);
 
             // does not throw
-            using (var model2 = Boost.Load(fileName)) { }
-            using (var model2 = Boost.LoadFromString(content)) { }
+            using (var model2 = Boost.Load(fileName))
+            {
+                GC.KeepAlive(model2);
+            }
+            using (var model2 = Boost.LoadFromString(content))
+            {
+                GC.KeepAlive(model2);
+            }
         }
     }
 }

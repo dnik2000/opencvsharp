@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OpenCvSharp.Detail;
 using Xunit;
+using Xunit.Abstractions;
 
 #pragma warning disable 162
 
@@ -9,6 +10,13 @@ namespace OpenCvSharp.Tests.Stitching
 {
     public class StitchingTest : TestBase
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public StitchingTest(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void Run()
         {
@@ -17,9 +25,9 @@ namespace OpenCvSharp.Tests.Stitching
             using (var stitcher = Stitcher.Create(Stitcher.Mode.Scans))
             using (var pano = new Mat())
             {
-                Console.Write("Stitching start...");
+                testOutputHelper.WriteLine("Stitching start...");
                 var status = stitcher.Stitch(images, pano);
-                Console.WriteLine(" finish (status:{0})", status);
+                testOutputHelper.WriteLine("finish (status:{0})", status);
                 Assert.Equal(Stitcher.Status.OK, status);
 
                 ShowImagesWhenDebugMode(pano);
@@ -31,12 +39,12 @@ namespace OpenCvSharp.Tests.Stitching
             }
         }
 
-        private Mat[] SelectStitchingImages(int width, int height, int count)
+        private static Mat[] SelectStitchingImages(int width, int height, int count)
         {
             var mats = new List<Mat>();
 
-            using (Mat source = Image(@"lenna.png", ImreadModes.Color))
-            using (Mat result = source.Clone())
+            using (var source = Image(@"lenna.png"))
+            using (var result = source.Clone())
             {
                 var rand = new Random(123); // constant seed for test
                 for (int i = 0; i < count; i++)

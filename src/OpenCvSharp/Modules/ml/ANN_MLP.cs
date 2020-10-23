@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace OpenCvSharp.ML
 {
@@ -15,8 +16,9 @@ namespace OpenCvSharp.ML
     public class ANN_MLP : StatModel
     {
         private Ptr? ptrObj;
-
+        
         #region Init and Disposal
+
         /// <summary>
         /// Creates instance by raw pointer cv::ml::ANN_MLP*
         /// </summary>
@@ -32,7 +34,8 @@ namespace OpenCvSharp.ML
         /// <returns></returns>
         public static ANN_MLP Create()
         {
-            IntPtr ptr = NativeMethods.ml_ANN_MLP_create();
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_create(out var ptr));
             return new ANN_MLP(ptr);
         }
 
@@ -41,13 +44,14 @@ namespace OpenCvSharp.ML
         /// Use ANN::save to serialize and store an ANN to disk.
         /// Load the ANN from this file again, by calling this function with the path to the file.
         /// </summary>
-        /// <param name="filePath"></param>
+        /// <param name="filePath">path to serialized ANN</param>
         /// <returns></returns>
         public static ANN_MLP Load(string filePath)
         {
             if (filePath == null)
                 throw new ArgumentNullException(nameof(filePath));
-            IntPtr ptr = NativeMethods.ml_ANN_MLP_load(filePath);
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_load(filePath, out var ptr));
             return new ANN_MLP(ptr);
         }
 
@@ -60,7 +64,8 @@ namespace OpenCvSharp.ML
         {
             if (strModel == null)
                 throw new ArgumentNullException(nameof(strModel));
-            IntPtr ptr = NativeMethods.ml_ANN_MLP_loadFromString(strModel);
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_loadFromString(strModel, out var ptr));
             return new ANN_MLP(ptr);
         }
 
@@ -75,7 +80,7 @@ namespace OpenCvSharp.ML
         }
 
         #endregion
-
+        
         #region Properties
 
         /// <summary>
@@ -85,13 +90,15 @@ namespace OpenCvSharp.ML
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getTermCriteria(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getTermCriteria(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setTermCriteria(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setTermCriteria(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -100,17 +107,20 @@ namespace OpenCvSharp.ML
         /// Strength of the weight gradient term.
         /// The recommended value is about 0.1. Default value is 0.1.
         /// </summary>
+        // ReSharper disable once IdentifierTypo
         public double BackpropWeightScale
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getBackpropWeightScale(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getBackpropWeightScale(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setBackpropWeightScale(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setBackpropWeightScale(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -121,17 +131,20 @@ namespace OpenCvSharp.ML
         /// It can vary from 0 (the feature is disabled) to 1 and beyond. The value 0.1 or 
         /// so is good enough. Default value is 0.1.
         /// </summary>
+        // ReSharper disable once IdentifierTypo
         public double BackpropMomentumScale
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getBackpropMomentumScale(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getBackpropMomentumScale(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setBackpropMomentumScale(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setBackpropMomentumScale(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -139,18 +152,21 @@ namespace OpenCvSharp.ML
         /// <summary>
         /// Initial value Delta_0 of update-values Delta_{ij}. Default value is 0.1.
         /// </summary>
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once IdentifierTypo
         public double RpropDW0
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getRpropDW0(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getRpropDW0(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setRpropDW0(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setRpropDW0(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -159,18 +175,21 @@ namespace OpenCvSharp.ML
         /// Increase factor eta^+.
         /// It must be &gt;1. Default value is 1.2.
         /// </summary>
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once IdentifierTypo
         public double RpropDWPlus
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getRpropDWPlus(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getRpropDWPlus(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setRpropDWPlus(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setRpropDWPlus(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -179,18 +198,21 @@ namespace OpenCvSharp.ML
         /// Decrease factor eta^-.
         /// It must be \&gt;1. Default value is 0.5.
         /// </summary>
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once IdentifierTypo
         public double RpropDWMinus
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getRpropDWPlus(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getRpropDWPlus(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setRpropDWPlus(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setRpropDWPlus(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -199,18 +221,21 @@ namespace OpenCvSharp.ML
         /// Update-values lower limit Delta_{min}.
         /// It must be positive. Default value is FLT_EPSILON.
         /// </summary>
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once IdentifierTypo
         public double RpropDWMin
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getRpropDWMin(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getRpropDWMin(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setRpropDWMin(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setRpropDWMin(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -219,18 +244,21 @@ namespace OpenCvSharp.ML
         /// Update-values upper limit Delta_{max}.
         /// It must be &gt;1. Default value is 50.
         /// </summary>
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once IdentifierTypo
         public double RpropDWMax
         {
             get
             {
-                var res = NativeMethods.ml_ANN_MLP_getRpropDWMax(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_getRpropDWMax(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
             set
             {
-                NativeMethods.ml_ANN_MLP_setRpropDWMax(ptr, value);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_ANN_MLP_setRpropDWMax(ptr, value));
                 GC.KeepAlive(this);
             }
         }
@@ -238,6 +266,53 @@ namespace OpenCvSharp.ML
         #endregion
 
         #region Methods
+        
+        /// <summary>
+        /// Sets training method and common parameters.
+        /// </summary>
+        /// <param name="method">Default value is ANN_MLP::RPROP. See ANN_MLP::TrainingMethods.</param>
+        /// <param name="param1">passed to setRpropDW0 for ANN_MLP::RPROP and to setBackpropWeightScale for ANN_MLP::BACKPROP and to initialT for ANN_MLP::ANNEAL.</param>
+        /// <param name="param2">passed to setRpropDWMin for ANN_MLP::RPROP and to setBackpropMomentumScale for ANN_MLP::BACKPROP and to finalT for ANN_MLP::ANNEAL.</param>
+        public virtual void SetTrainMethod(TrainingMethods method, double param1 = 0, double param2 = 0)
+        {
+            if (!Enum.IsDefined(typeof(TrainingMethods), method))
+                throw new InvalidEnumArgumentException(nameof(method), (int)method, typeof(TrainingMethods));
+
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_setTrainMethod(ptr, (int)method, param1, param2));
+            
+            GC.KeepAlive(this);
+        }
+
+        /// <summary>
+        /// Returns current training method
+        /// </summary>
+        /// <returns></returns>
+        public virtual TrainingMethods GetTrainMethod()
+        {
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_getTrainMethod(ptr, out var ret));
+            GC.KeepAlive(this);
+            return (TrainingMethods) ret;
+        }
+
+        /// <summary>
+        /// Initialize the activation function for each neuron.
+        /// Currently the default and the only fully supported activation function is ANN_MLP::SIGMOID_SYM.
+        /// </summary>
+        /// <param name="type">The type of activation function. See ANN_MLP::ActivationFunctions.</param>
+        /// <param name="param1">The first parameter of the activation function, \f$\alpha\f$. Default value is 0.</param>
+        /// <param name="param2">The second parameter of the activation function, \f$\beta\f$. Default value is 0.</param>
+        public virtual void SetActivationFunction(ActivationFunctions type, double param1 = 0, double param2 = 0)
+        {
+            if (!Enum.IsDefined(typeof(ActivationFunctions), type))
+                throw new InvalidEnumArgumentException(nameof(type), (int)type, typeof(ActivationFunctions));
+            
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_setActivationFunction(ptr, (int)type, param1, param2));
+
+            GC.KeepAlive(this);
+        }
 
         /// <summary>
         /// Integer vector specifying the number of neurons in each layer including the input and output layers.
@@ -250,7 +325,10 @@ namespace OpenCvSharp.ML
             ThrowIfDisposed();
             if (layerSizes == null)
                 throw new ArgumentNullException(nameof(layerSizes));
-            NativeMethods.ml_ANN_MLP_setLayerSizes(ptr, layerSizes.CvPtr);
+
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_setLayerSizes(ptr, layerSizes.CvPtr));
+
             GC.KeepAlive(this);
             GC.KeepAlive(layerSizes);
         }
@@ -264,9 +342,12 @@ namespace OpenCvSharp.ML
         public virtual Mat GetLayerSizes()
         {
             ThrowIfDisposed();
-            IntPtr p = NativeMethods.ml_ANN_MLP_getLayerSizes(ptr);
+
+            NativeMethods.HandleException(
+                NativeMethods.ml_ANN_MLP_getLayerSizes(ptr, out var ret));
+
             GC.KeepAlive(this);
-            return new Mat(p);
+            return new Mat(ret);
         }
 
         #endregion
@@ -351,14 +432,16 @@ namespace OpenCvSharp.ML
 
             public override IntPtr Get()
             {
-                var res = NativeMethods.ml_Ptr_ANN_MLP_get(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_Ptr_ANN_MLP_get(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
 
             protected override void DisposeUnmanaged()
             {
-                NativeMethods.ml_Ptr_ANN_MLP_delete(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.ml_Ptr_ANN_MLP_delete(ptr));
                 base.DisposeUnmanaged();
             }
         }

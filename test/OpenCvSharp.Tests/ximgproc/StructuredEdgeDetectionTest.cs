@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Threading.Tasks;
 using OpenCvSharp.XImgProc;
 using Xunit;
+
+// ReSharper disable RedundantArgumentDefaultValue
 
 namespace OpenCvSharp.Tests.XImgProc
 {
@@ -97,14 +98,12 @@ namespace OpenCvSharp.Tests.XImgProc
             {
                 if (!File.Exists(fileName))
                 {
-                    var contents = DownloadBytes(ModelUrl);
-                    using (var srcStream = new MemoryStream(contents))
-                    using (var gzipStream = new GZipStream(srcStream, CompressionMode.Decompress))
-                    using (var dstStream = new MemoryStream())
-                    {
-                        gzipStream.CopyTo(dstStream);
-                        File.WriteAllBytes(fileName, dstStream.ToArray());
-                    }
+                    var contents = DownloadBytes(new Uri(ModelUrl));
+                    using var srcStream = new MemoryStream(contents);
+                    using var gzipStream = new GZipStream(srcStream, CompressionMode.Decompress);
+                    using var dstStream = new MemoryStream();
+                    gzipStream.CopyTo(dstStream);
+                    File.WriteAllBytes(fileName, dstStream.ToArray());
                 }
             }
         }

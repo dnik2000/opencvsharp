@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+
 //using System.Threading.Tasks;
 
 #pragma warning disable 1591
@@ -64,7 +62,7 @@ namespace OpenCvSharp.Extensions
             if (minLineLength <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minLineLength));
             if (thetaMax < thetaMin)
-                throw new ArgumentException();
+                throw new ArgumentException("thetaMax < thetaMin");
             if (thetaMax > Math.PI)
                 throw new ArgumentOutOfRangeException(nameof(thetaMax), "thetaMax <= pi");
             if (thetaMin < 0)

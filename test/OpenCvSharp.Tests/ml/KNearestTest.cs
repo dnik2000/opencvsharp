@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using OpenCvSharp;
 using OpenCvSharp.ML;
 using Xunit;
 
@@ -26,7 +24,7 @@ namespace OpenCvSharp.Tests.ML
             int[] trainLabelsData = { 2, 3, 4, 5, 6, 7 };
             var trainLabels = new Mat(1, 6, MatType.CV_32S, trainLabelsData);
 
-            var kNearest = KNearest.Create();
+            using var kNearest = KNearest.Create();
             kNearest.Train(trainFeatures, SampleTypes.RowSample, trainLabels);
 
             float[] testFeatureData = { 3, 3, 3, 3 };
@@ -75,8 +73,14 @@ namespace OpenCvSharp.Tests.ML
             //Console.WriteLine(content);
 
             // Assert.DoesNotThrow
-            using (var model2 = KNearest.Load(fileName)) { }
-            using (var model2 = KNearest.LoadFromString(content)) { }
+            using (var model2 = KNearest.Load(fileName))
+            {
+                GC.KeepAlive(model2);
+            }
+            using (var model2 = KNearest.LoadFromString(content))
+            {
+                GC.KeepAlive(model2);
+            }
         }
     }
 }

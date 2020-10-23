@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OpenCvSharp.Blob
+﻿namespace OpenCvSharp.Blob
 {
     /// <summary>
     /// Constants which are defined by cvblob
@@ -10,11 +8,11 @@ namespace OpenCvSharp.Blob
         // ReSharper disable InconsistentNaming
 
         #region RenderBlobsMode
-
+            
+#pragma warning disable CA1707
         /// <summary>
         /// Render each blog with a different color.
         /// </summary>
-
         public const ushort CV_BLOB_RENDER_COLOR = 0x0001;
 
         /// <summary>
@@ -41,11 +39,13 @@ namespace OpenCvSharp.Blob
         /// Print blob data to std out.
         /// </summary>
         public const ushort CV_BLOB_RENDER_TO_STD = 0x0020;
+#pragma warning restore CA1707
 
         #endregion
 
         #region CvChainCode
-
+        
+#pragma warning disable CA1707
         /// <summary>
         /// Up.
         /// </summary>
@@ -85,11 +85,12 @@ namespace OpenCvSharp.Blob
         /// Up and left.
         /// </summary>
         public const byte CV_CHAINCODE_UP_LEFT = 7;
+#pragma warning restore CA1707 
 
         /// <summary>
         /// Move vectors of chain codes.
         /// </summary>
-        public static readonly sbyte[][] ChainCodeMoves = new sbyte[][]
+        public static readonly sbyte[][] ChainCodeMoves = 
         {
             new sbyte[] {0, -1},
             new sbyte[] {1, -1},
@@ -105,6 +106,7 @@ namespace OpenCvSharp.Blob
 
         #region RenderTracksMode
 
+#pragma warning disable CA1707 
         // ReSharper disable InconsistentNaming
         /// <summary>
         /// Print the ID of each track in the image.
@@ -127,6 +129,7 @@ namespace OpenCvSharp.Blob
         public const ushort CV_TRACK_RENDER_TO_STD = 0x0020;
 
         // ReSharper restore InconsistentNaming
+#pragma warning restore CA1707
 
         #endregion
     }

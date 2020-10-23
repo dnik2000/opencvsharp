@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
+
+// ReSharper disable RedundantArgumentDefaultValue
 
 namespace OpenCvSharp.Tests.Core
 {
     public class SolveEquationTest : TestBase
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public SolveEquationTest(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void ByMat()
         {
@@ -23,7 +33,7 @@ namespace OpenCvSharp.Tests.Core
 
             Cv2.Solve(a, y, x, DecompTypes.LU);
 
-            Console.WriteLine("X1 = {0}, X2 = {1}", x.At<double>(0), x.At<double>(1));
+            testOutputHelper.WriteLine("X1 = {0}, X2 = {1}", x.At<double>(0), x.At<double>(1));
             Assert.Equal(4, x.At<double>(0), 6);
             Assert.Equal(6, x.At<double>(1), 6);
         }
@@ -39,14 +49,14 @@ namespace OpenCvSharp.Tests.Core
                           {2, 3}};
             double[] y = { 10, 26 };
 
-            List<double> x = new List<double>();
+            var x = new List<double>();
 
-            Cv2.Solve(
-                InputArray.Create(a), InputArray.Create(y),
-                OutputArray.Create(x),
-                DecompTypes.LU);
+            using var ia = InputArray.Create(a);
+            using var iy = InputArray.Create(y);
+            using var ox = OutputArray.Create(x);
+            Cv2.Solve(ia, iy, ox, DecompTypes.LU);
 
-            Console.WriteLine("X1 = {0}, X2 = {1}", x[0], x[1]);
+            testOutputHelper.WriteLine("X1 = {0}, X2 = {1}", x[0], x[1]);
             Assert.Equal(4, x[0], 6);
             Assert.Equal(6, x[1], 6);
         }

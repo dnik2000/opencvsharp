@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using OpenCvSharp.Util;
+
+// ReSharper disable UnusedMember.Global
 
 namespace OpenCvSharp
 {
@@ -36,7 +40,7 @@ namespace OpenCvSharp
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
-            RotatedRect[] array = EnumerableEx.ToArray(data);
+            var array = data.ToArray();
             ptr = NativeMethods.vector_RotatedRect_new3(array, new IntPtr(array.Length));
         }
 
@@ -81,14 +85,14 @@ namespace OpenCvSharp
         /// <returns></returns>
         public RotatedRect[] ToArray()
         {
-            int size = Size;
+            var size = Size;
             if (size == 0)            
-                return new RotatedRect[0];
+                return Array.Empty<RotatedRect>();
             
             var dst = new RotatedRect[size];
             using (var dstPtr = new ArrayAddress1<RotatedRect>(dst))
             {
-                MemoryHelper.CopyMemory(dstPtr, ElemPtr, RotatedRect.SizeOf * dst.Length);
+                MemoryHelper.CopyMemory(dstPtr.Pointer, ElemPtr, Marshal.SizeOf<RotatedRect>() * dst.Length);
             }
             GC.KeepAlive(this); // ElemPtr is IntPtr to memory held by this object, so
                                 // make sure we are not disposed until finished with copy.

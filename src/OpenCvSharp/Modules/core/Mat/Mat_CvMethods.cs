@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OpenCvSharp
 {
@@ -45,12 +44,11 @@ namespace OpenCvSharp
         /// In the case of multi-channel source array, the table should either have 
         /// a single channel (in this case the same table is used for all channels)
         ///  or the same number of channels as in the source array</param>
-        /// <param name="interpolation"></param>
         /// <returns></returns>
-        public Mat LUT(InputArray lut, int interpolation = 0)
+        public Mat LUT(InputArray lut)
         {
             var dst = new Mat();
-            Cv2.LUT(this, lut, dst, interpolation);
+            Cv2.LUT(this, lut, dst);
             return dst;
         }
 
@@ -61,12 +59,11 @@ namespace OpenCvSharp
         /// In the case of multi-channel source array, the table should either have 
         /// a single channel (in this case the same table is used for all channels)
         ///  or the same number of channels as in the source array</param>
-        /// <param name="interpolation"></param>
         /// <returns></returns>
-        public Mat LUT(byte[] lut, int interpolation = 0)
+        public Mat LUT(byte[] lut)
         {
             var dst = new Mat();
-            Cv2.LUT(this, lut, dst, interpolation);
+            Cv2.LUT(this, lut, dst);
             return dst;
         }
 
@@ -297,10 +294,10 @@ namespace OpenCvSharp
         }
 
         /// <summary>
-        /// set mask elements for those array elements which are within the element-specific bounding box (dst = lowerb &lt;= src &amp;&amp; src &lt; upperb)
+        /// Checks if array elements lie between the elements of two other arrays.
         /// </summary>
-        /// <param name="lowerb">The inclusive lower boundary array of the same size and type as src</param>
-        /// <param name="upperb">The exclusive upper boundary array of the same size and type as src</param>
+        /// <param name="lowerb">inclusive lower boundary array or a scalar.</param>
+        /// <param name="upperb">inclusive upper boundary array or a scalar.</param>
         /// <returns>The destination array, will have the same size as src and CV_8U type</returns>
         public Mat InRange(InputArray lowerb, InputArray upperb)
         {
@@ -309,11 +306,12 @@ namespace OpenCvSharp
             return dst;
         }
 
+
         /// <summary>
-        /// set mask elements for those array elements which are within the element-specific bounding box (dst = lowerb &lt;= src &amp;&amp; src &lt; upperb)
+        /// Checks if array elements lie between the elements of two other arrays.
         /// </summary>
-        /// <param name="lowerb">The inclusive lower boundary array of the same size and type as src</param>
-        /// <param name="upperb">The exclusive upper boundary array of the same size and type as src</param>
+        /// <param name="lowerb">inclusive lower boundary array or a scalar.</param>
+        /// <param name="upperb">inclusive upper boundary array or a scalar.</param>
         /// <returns>The destination array, will have the same size as src and CV_8U type</returns>
         public Mat InRange(Scalar lowerb, Scalar upperb)
         {
@@ -627,12 +625,22 @@ namespace OpenCvSharp
         /// shuffles the input array elements
         /// </summary>
         /// <param name="iterFactor">The scale factor that determines the number of random swap operations.</param>
+        /// <returns>The input/output numerical 1D array</returns>
+        public void RandShuffle(double iterFactor)
+        {
+            Cv2.RandShuffle(this, iterFactor);
+        }
+
+        /// <summary>
+        /// shuffles the input array elements
+        /// </summary>
+        /// <param name="iterFactor">The scale factor that determines the number of random swap operations.</param>
         /// <param name="rng">The optional random number generator used for shuffling. 
         /// If it is null, theRng() is used instead.</param>
         /// <returns>The input/output numerical 1D array</returns>
-        public void RandShuffle(double iterFactor, RNG? rng = null)
+        public void RandShuffle(double iterFactor, ref RNG rng)
         {
-            Cv2.RandShuffle(this, iterFactor, rng);
+            Cv2.RandShuffle(this, iterFactor, ref rng);
         }
 
         #region Drawing
@@ -879,6 +887,25 @@ namespace OpenCvSharp
 
         #endregion
 
+        /// <summary>
+        /// Draws a marker on a predefined position in an image.
+        ///
+        /// The function cv::drawMarker draws a marker on a given position in the image.For the moment several
+        /// marker types are supported, see #MarkerTypes for more information.
+        /// </summary>
+        /// <param name="position">The point where the crosshair is positioned.</param>
+        /// <param name="color">Line color.</param>
+        /// <param name="markerType">The specific type of marker you want to use.</param>
+        /// <param name="markerSize">The length of the marker axis [default = 20 pixels]</param>
+        /// <param name="thickness">Line thickness.</param>
+        /// <param name="lineType">Type of the line.</param>
+        public void DrawMarker(
+            Point position, Scalar color,
+            MarkerTypes markerType = MarkerTypes.Cross, int markerSize = 20, int thickness = 1, LineTypes lineType = LineTypes.Link8)
+        {
+            Cv2.DrawMarker(this, position, color, markerType, markerSize, thickness, lineType);
+        }
+
         #region FillConvexPoly
 
 #if LANG_JP
@@ -988,8 +1015,7 @@ namespace OpenCvSharp
         /// <returns></returns>
         public byte[] ImEncode(string ext = ".png", int[]? prms = null)
         {
-            byte[] buf;
-            Cv2.ImEncode(ext, this, out buf, prms);
+            Cv2.ImEncode(ext, this, out var buf, prms);
             return buf;
         }
 
@@ -1001,8 +1027,7 @@ namespace OpenCvSharp
         /// <returns></returns>
         public byte[] ImEncode(string ext = ".png", params ImageEncodingParam[] prms)
         {
-            byte[] buf;
-            Cv2.ImEncode(ext, this, out buf, prms);
+            Cv2.ImEncode(ext, this, out var buf, prms);
             return buf;
         }
 
@@ -1135,32 +1160,6 @@ namespace OpenCvSharp
             Cv2.BilateralFilter(this, dst, d, sigmaColor, sigmaSpace, borderType);
             return dst;
         }
-
-        /*
-        /// <summary>
-        /// Applies the adaptive bilateral filter to an image.
-        /// </summary>
-        /// <param name="ksize">The kernel size. This is the neighborhood where the local variance will be calculated, 
-        /// and where pixels will contribute (in a weighted manner).</param>
-        /// <param name="sigmaSpace">Filter sigma in the coordinate space. 
-        /// Larger value of the parameter means that farther pixels will influence each other 
-        /// (as long as their colors are close enough; see sigmaColor). Then d>0, it specifies the neighborhood 
-        /// size regardless of sigmaSpace, otherwise d is proportional to sigmaSpace.</param>
-        /// <param name="maxSigmaColor">Maximum allowed sigma color (will clamp the value calculated in the 
-        /// ksize neighborhood. Larger value of the parameter means that more dissimilar pixels will 
-        /// influence each other (as long as their colors are close enough; see sigmaColor). 
-        /// Then d>0, it specifies the neighborhood size regardless of sigmaSpace, otherwise d is proportional to sigmaSpace.</param>
-        /// <param name="anchor">The anchor point. The default value Point(-1,-1) means that the anchor is at the kernel center</param>
-        /// <param name="borderType">Pixel extrapolation method.</param>
-        /// <returns>The destination image; will have the same size and the same type as src</returns>
-        public Mat AdaptiveBilateralFilter(Size ksize, double sigmaSpace, 
-            double maxSigmaColor = 20.0, Point? anchor = null, BorderTypes borderType = BorderTypes.Default)
-        {
-            var dst = new Mat();
-            Cv2.AdaptiveBilateralFilter(this, dst, ksize, sigmaSpace, maxSigmaColor, anchor, borderType);
-            return dst;
-        }
-        */
 
         /// <summary>
         /// Smoothes image using box filter
@@ -1306,7 +1305,7 @@ namespace OpenCvSharp
         /// <param name="L2gradient">Indicates, whether the more accurate L2 norm should be used to compute the image gradient magnitude (true), or a faster default L1 norm is enough (false). [By default this is false]</param>
         /// <returns>The output edge map. It will have the same size and the same type as image</returns>
 #endif
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
         public Mat Canny(double threshold1, double threshold2, int apertureSize = 3, bool L2gradient = false)
         {
             var dst = new Mat();
@@ -1459,7 +1458,7 @@ namespace OpenCvSharp
         /// Finds circles in a grayscale image using a Hough transform.
         /// The input matrix must be 8-bit, single-channel and grayscale.
         /// </summary>
-        /// <param name="method">Currently, the only implemented method is HoughCirclesMethod.Gradient</param>
+        /// <param name="method">The available methods are HoughMethods.Gradient and HoughMethods.GradientAlt</param>
         /// <param name="dp">The inverse ratio of the accumulator resolution to the image resolution. </param>
         /// <param name="minDist">Minimum distance between the centers of the detected circles. </param>
         /// <param name="param1">The first method-specific parameter. [By default this is 100]</param>
@@ -1495,7 +1494,7 @@ namespace OpenCvSharp
         /// <param name="borderValue">The border value in case of a constant border. The default value has a special meaning. [By default this is CvCpp.MorphologyDefaultBorderValue()]</param>
         /// <returns>The destination image. It will have the same size and the same type as src</returns>
 #endif
-        public Mat Dilate(InputArray element, Point? anchor = null, int iterations = 1, 
+        public Mat Dilate(InputArray? element, Point? anchor = null, int iterations = 1, 
             BorderTypes borderType = BorderTypes.Constant, Scalar? borderValue = null)
         {
             var dst = new Mat();
@@ -1524,7 +1523,7 @@ namespace OpenCvSharp
         /// <param name="borderValue">The border value in case of a constant border. The default value has a special meaning. [By default this is CvCpp.MorphologyDefaultBorderValue()]</param>
         /// <returns>The destination image. It will have the same size and the same type as src</returns>
 #endif
-        public Mat Erode(InputArray element, Point? anchor = null, int iterations = 1, 
+        public Mat Erode(InputArray? element, Point? anchor = null, int iterations = 1, 
             BorderTypes borderType = BorderTypes.Constant, Scalar? borderValue = null)
         {
             var dst = new Mat();
@@ -1555,7 +1554,7 @@ namespace OpenCvSharp
         /// <param name="borderValue">The border value in case of a constant border. The default value has a special meaning. [By default this is CvCpp.MorphologyDefaultBorderValue()]</param>
         /// <returns>Destination image. It will have the same size and the same type as src</returns>
 #endif
-        public Mat MorphologyEx(MorphTypes op, InputArray element,
+        public Mat MorphologyEx(MorphTypes op, InputArray? element,
             Point? anchor = null, int iterations = 1, BorderTypes borderType = BorderTypes.Constant,
             Scalar? borderValue = null)
         {
@@ -2011,12 +2010,13 @@ namespace OpenCvSharp
         /// </summary>
         /// <param name="templ">Searched template; must be not greater than the source image and have the same data type</param>
         /// <param name="method">Specifies the comparison method</param>
+        /// <param name="mask">Mask of searched template. It must have the same datatype and size with templ. It is not set by default.</param>
         /// <returns>A map of comparison results; will be single-channel 32-bit floating-point. 
         /// If image is WxH and templ is wxh then result will be (W-w+1) x (H-h+1).</returns>
-        public Mat MatchTemplate(InputArray templ, TemplateMatchModes method)
+        public Mat MatchTemplate(InputArray templ, TemplateMatchModes method, InputArray? mask = null)
         {
             var dst = new Mat();
-            Cv2.MatchTemplate(this, templ, dst, method);
+            Cv2.MatchTemplate(this, templ, dst, method, mask);
             return dst;
         }
 
@@ -2305,7 +2305,6 @@ namespace OpenCvSharp
     /// <summary>
     /// 輪郭線，または内側が塗りつぶされた輪郭を描きます．
     /// </summary>
-    /// <param name="image">出力画像</param>
     /// <param name="contours"> 入力される全輪郭．各輪郭は，点のベクトルとして格納されています．</param>
     /// <param name="contourIdx">描かれる輪郭を示します．これが負値の場合，すべての輪郭が描画されます．</param>
     /// <param name="color">輪郭の色．</param>
@@ -2321,7 +2320,6 @@ namespace OpenCvSharp
         /// <summary>
         /// Draws contours in the image
         /// </summary>
-        /// <param name="image">Destination image.</param>
         /// <param name="contours">All the input contours. Each contour is stored as a point vector.</param>
         /// <param name="contourIdx">Parameter indicating a contour to draw. If it is negative, all the contours are drawn.</param>
         /// <param name="color">Color of the contours.</param>
@@ -2336,7 +2334,6 @@ namespace OpenCvSharp
         /// <param name="offset">Optional contour shift parameter. Shift all the drawn contours by the specified offset = (dx, dy)</param>
 #endif
         public void DrawContours(
-            InputOutputArray image,
             IEnumerable<Mat> contours,
             int contourIdx,
             Scalar color,
@@ -2346,7 +2343,7 @@ namespace OpenCvSharp
             int maxLevel = int.MaxValue,
             Point? offset = null)
         {
-            Cv2.DrawContours(image, contours, contourIdx, color, 
+            Cv2.DrawContours(this, contours, contourIdx, color, 
                 thickness, lineType, hierarchy, maxLevel, offset);
         }
 
@@ -2425,7 +2422,6 @@ namespace OpenCvSharp
         /// <summary>
         /// Computes convex hull for a set of 2D points.
         /// </summary>
-        /// <param name="points">The input 2D point set, represented by CV_32SC2 or CV_32FC2 matrix</param>
         /// <param name="clockwise">If true, the output convex hull will be oriented clockwise, 
         /// otherwise it will be oriented counter-clockwise. Here, the usual screen coordinate 
         /// system is assumed - the origin is at the top-left corner, x axis is oriented to the right, 
@@ -2435,51 +2431,48 @@ namespace OpenCvSharp
         /// hull (must have the same type as the input points), or a vector of 0-based point 
         /// indices of the hull points in the original array (since the set of convex hull 
         /// points is a subset of the original point set).</returns>
-        public Mat ConvexHull(InputArray points, bool clockwise = false, bool returnPoints = true)
+        public Mat ConvexHull(bool clockwise = false, bool returnPoints = true)
         {
             var dst = new Mat();
-            Cv2.ConvexHull(points, dst, clockwise, returnPoints);
+            Cv2.ConvexHull(this, dst, clockwise, returnPoints);
             return dst;
         }
 
         /// <summary>
         /// Computes convex hull for a set of 2D points.
         /// </summary>
-        /// <param name="points">The input 2D point set, represented by CV_32SC2 or CV_32FC2 matrix</param>
         /// <param name="clockwise">If true, the output convex hull will be oriented clockwise, 
         /// otherwise it will be oriented counter-clockwise. Here, the usual screen coordinate 
         /// system is assumed - the origin is at the top-left corner, x axis is oriented to the right, 
         /// and y axis is oriented downwards.</param>
         /// <returns>The output convex hull. It is a vector of points that form the 
         /// hull (must have the same type as the input points).</returns>
-        public Point[] ConvexHullPoints(InputArray points, bool clockwise = false)
+        public Point[] ConvexHullPoints(bool clockwise = false)
         {
             var dst = new Mat<Point>();
-            Cv2.ConvexHull(points, dst, clockwise, true);
+            Cv2.ConvexHull(this, dst, clockwise);
             return dst.ToArray();
         }
 
         /// <summary>
         /// Computes convex hull for a set of 2D points.
         /// </summary>
-        /// <param name="points">The input 2D point set, represented by CV_32SC2 or CV_32FC2 matrix</param>
         /// <param name="clockwise">If true, the output convex hull will be oriented clockwise, 
         /// otherwise it will be oriented counter-clockwise. Here, the usual screen coordinate 
         /// system is assumed - the origin is at the top-left corner, x axis is oriented to the right, 
         /// and y axis is oriented downwards.</param>
         /// <returns>The output convex hull. It is a vector of points that form the 
         /// hull (must have the same type as the input points).</returns>
-        public Point2f[] ConvexHullFloatPoints(InputArray points, bool clockwise = false)
+        public Point2f[] ConvexHullFloatPoints(bool clockwise = false)
         {
             var dst = new Mat<Point2f>();
-            Cv2.ConvexHull(points, dst, clockwise, true);
+            Cv2.ConvexHull(this, dst, clockwise);
             return dst.ToArray();
         }
 
         /// <summary>
         /// Computes convex hull for a set of 2D points.
         /// </summary>
-        /// <param name="points">The input 2D point set, represented by CV_32SC2 or CV_32FC2 matrix</param>
         /// <param name="clockwise">If true, the output convex hull will be oriented clockwise, 
         /// otherwise it will be oriented counter-clockwise. Here, the usual screen coordinate 
         /// system is assumed - the origin is at the top-left corner, x axis is oriented to the right, 
@@ -2487,10 +2480,10 @@ namespace OpenCvSharp
         /// <returns>The output convex hull. It is a vector of 0-based point 
         /// indices of the hull points in the original array (since the set of convex hull 
         /// points is a subset of the original point set).</returns>
-        public int[] ConvexHullIndices(InputArray points, bool clockwise = false)
+        public int[] ConvexHullIndices(bool clockwise = false)
         {
             var dst = new Mat<int>();
-            Cv2.ConvexHull(points, dst, clockwise, false);
+            Cv2.ConvexHull(this, dst, clockwise, false);
             return dst.ToArray();
         }
 

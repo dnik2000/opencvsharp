@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using OpenCvSharp.Util;
 
 namespace OpenCvSharp
@@ -31,31 +32,24 @@ namespace OpenCvSharp
                 throw new NotSupportedException();
 
             // Matで結果取得
-            IntPtr matPtr = NativeMethods.core_OutputArray_getMat(ptr);
+            NativeMethods.HandleException(
+                NativeMethods.core_OutputArray_getMat(ptr, out var matPtr));
             GC.KeepAlive(this);
-            using (Mat mat = new Mat(matPtr))
+            using (var mat = new Mat(matPtr))
             {
                 // 配列サイズ
-                int size = mat.Rows * mat.Cols;
+                var size = mat.Rows * mat.Cols;
                 // 配列にコピー
-                T[] array = new T[size];
-                using (ArrayAddress1<T> aa = new ArrayAddress1<T>(array))
+                var array = new T[size];
+                using (var aa = new ArrayAddress1<T>(array))
                 {
-                    int elemSize = MarshalHelper.SizeOf<T>();
+                    var elemSize = Marshal.SizeOf<T>();
                     MemoryHelper.CopyMemory(aa.Pointer, mat.Data, size * elemSize);
                 }
                 // リストにコピー
                 list.Clear();
                 list.AddRange(array);
             }
-        }
-
-        /// <summary>
-        /// Releases managed resources
-        /// </summary>
-        protected override void DisposeManaged()
-        {
-            base.DisposeManaged();
         }
     }
 }

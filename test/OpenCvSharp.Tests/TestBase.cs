@@ -1,27 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 [assembly: CollectionBehavior(/*MaxParallelThreads = 2, */DisableTestParallelization = true)]
+
+#pragma warning disable CA1810 // Initialize reference type static fields inline
+#pragma warning disable CA5359 
 
 namespace OpenCvSharp.Tests
 {
     public abstract class TestBase
     {
         private static readonly HttpClient httpClient;
-
+        
         static TestBase()
         {
             ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-#if DOTNET_FRAMEWORK
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-#endif
 
-            httpClient = new HttpClient
+#pragma warning disable CA5364
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+#pragma warning restore CA5364
+
+#pragma warning disable CA2000 
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = delegate { return true; }
+            };
+#pragma warning restore CA2000
+            httpClient = new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromMinutes(5)
             };
@@ -39,8 +51,10 @@ namespace OpenCvSharp.Tests
             Assert.NotNull(img1);
             Assert.NotNull(img2);
 #pragma warning disable CS8602
+#pragma warning disable CA1062
             Assert.Equal(img1.Type(), img2.Type());
 #pragma warning restore CS8602 
+#pragma warning restore CA1062 
 
             using (var comparison = new Mat())
             {
@@ -78,6 +92,14 @@ namespace OpenCvSharp.Tests
             }
         }
 
+        protected static void ShowImagesWhenDebugMode(IEnumerable<Mat> mats, IEnumerable<string> names)
+        {
+            if (Debugger.IsAttached)
+            {
+                Window.ShowImages(mats, names);
+            }
+        }
+
         protected static void Pause(string message = "Press any key to exit")
         {
             if (Debugger.IsAttached)
@@ -88,30 +110,60 @@ namespace OpenCvSharp.Tests
             }
         }
 
-        protected static byte[] DownloadBytes(string url)
+        protected static byte[] DownloadBytes(
+            Uri uri, 
+            Action<(long BytesReceived, long TotalBytesToReceive, int ProgressPercentage)>? downloadProgressChangedEvent = null)
         {
-            using (var client = new MyWebClient())
-                return client.DownloadData(url);
-            //var response = (await httpClient.GetAsync(url)).EnsureSuccessStatusCode();
-            //return await response.Content.ReadAsByteArrayAsync();
+            using var client = new MyWebClient();
+            if (downloadProgressChangedEvent == null)
+            {
+                return client.DownloadData(uri);
+            }
+
+            var task = client.DownloadDataTaskAsync(
+                uri,
+                new Progress<(long BytesReceived, long TotalBytesToReceive, int ProgressPercentage)>(downloadProgressChangedEvent));
+            return task.Result;
+            //var response = (httpClient.GetAsync(uri).Result).EnsureSuccessStatusCode();
+            //return response.Content.ReadAsByteArrayAsync().Result;
         }
 
-        protected static string DownloadString(string url)
+        private static byte[] DownloadAndCacheBytes(Uri uri, string fileName)
         {
-            using (var client = new MyWebClient())
-                return client.DownloadString(url);
+            lock (lockObj)
+            {
+                if (File.Exists(fileName))
+                {
+                    return File.ReadAllBytes(fileName);
+                }
+
+                var contents = DownloadBytes(uri);
+                File.WriteAllBytes(fileName, contents);
+                return contents;
+            }
+        }
+        private static readonly object lockObj = new object();
+
+        protected static async Task<byte[]> DownloadBytesAsync(Uri uri, CancellationToken token = default)
+        {
+            var response = await httpClient.GetAsync(uri, token).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+        }
+
+        protected static async Task<Stream> DownloadStreamAsync(Uri uri, CancellationToken token = default)
+        {
+            var response = await httpClient.GetAsync(uri, token).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        }
+
+        protected static string DownloadString(Uri uri)
+        {
+            using var client = new MyWebClient();
+            return client.DownloadString(uri);
             //var response = (await httpClient.GetAsync(url)).EnsureSuccessStatusCode();
             //return await response.Content.ReadAsStringAsync();
-        }
-
-        private class MyWebClient : WebClient
-        {
-            protected override WebRequest GetWebRequest(Uri uri)
-            {
-                WebRequest w = base.GetWebRequest(uri);
-                w.Timeout = 5 * 60 * 1000; // ms
-                return w;
-            }
         }
     }
 }

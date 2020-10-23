@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using Xunit;
 
 namespace OpenCvSharp.Tests.Calib3D
@@ -14,7 +11,7 @@ namespace OpenCvSharp.Tests.Calib3D
             var left = Image("tsukuba_left.png", ImreadModes.Grayscale);
             var right = Image("tsukuba_right.png", ImreadModes.Grayscale);
 
-            var sbm = StereoBM.Create();
+            using var sbm = StereoBM.Create();
             var disparity = new Mat();
             sbm.Compute(left, right, disparity);
 

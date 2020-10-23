@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using OpenCvSharp.Util;
 
@@ -46,7 +47,7 @@ namespace OpenCvSharp
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
-            DMatch[] array = EnumerableEx.ToArray(data);
+            var array = data.ToArray();
             ptr = NativeMethods.vector_DMatch_new3(array, new IntPtr(array.Length));
         }
 
@@ -91,15 +92,15 @@ namespace OpenCvSharp
         /// <returns></returns>
         public DMatch[] ToArray()
         {
-            int size = Size;
+            var size = Size;
             if (size == 0)
             {
-                return new DMatch[0];
+                return Array.Empty<DMatch>();
             }
-            DMatch[] dst = new DMatch[size];
+            var dst = new DMatch[size];
             using (var dstPtr = new ArrayAddress1<DMatch>(dst))
             {
-                MemoryHelper.CopyMemory(dstPtr, ElemPtr, MarshalHelper.SizeOf<DMatch>()*dst.Length);
+                MemoryHelper.CopyMemory(dstPtr.Pointer, ElemPtr, Marshal.SizeOf<DMatch>()*dst.Length);
             }
             GC.KeepAlive(this); // ElemPtr is IntPtr to memory held by this object, so
                                 // make sure we are not disposed until finished with copy.

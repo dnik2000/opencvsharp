@@ -8,7 +8,7 @@ namespace OpenCvSharp
     /// </summary>
     public sealed class OutputArrayOfMatList : OutputArray
     {
-        private List<Mat> list;
+        private readonly List<Mat> list;
 
         /// <summary>
         /// 
@@ -17,9 +17,7 @@ namespace OpenCvSharp
         internal OutputArrayOfMatList(List<Mat> list)
             : base(list)
         {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
-            this.list = list;
+            this.list = list ?? throw new ArgumentNullException(nameof(list));
         }
 
         /// <summary>
@@ -42,19 +40,12 @@ namespace OpenCvSharp
             // Matで結果取得
             using (var vectorOfMat = new VectorOfMat())
             {
-                NativeMethods.core_OutputArray_getVectorOfMat(ptr, vectorOfMat.CvPtr);
+                NativeMethods.HandleException(
+                    NativeMethods.core_OutputArray_getVectorOfMat(ptr, vectorOfMat.CvPtr));
                 GC.KeepAlive(this);
                 list.Clear();
                 list.AddRange(vectorOfMat.ToArray());
             }
-        }
-
-        /// <summary>
-        /// Releases managed resources
-        /// </summary>
-        protected override void DisposeManaged()
-        {
-            base.DisposeManaged();
         }
     }
 }

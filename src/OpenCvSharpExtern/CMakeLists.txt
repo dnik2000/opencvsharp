@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
+set(VERSION_MAJOR 4)
+set(VERSION_MINOR 5)
+set(VERSION_PATCH 0)
 
 # This options allow to exclude some OpenCv modules from OpenCvSharp
 # It helps for custom lightweight builds of OpenCv
@@ -17,6 +20,16 @@ option(WITH_opencv_quality "Compile with opencv_quality module" ON)
 option(WITH_opencv_text "Compile with opencv_text module" ON)
 option(WITH_opencv_xphoto "Compile with opencv_xphoto module" ON)
 
+include_directories(${OpenCV_INCLUDE_DIR})
+link_directories(${OpenCV_LIBRARY_DIR} ${OpenCV_LIBRARIES})
+IF(APPLE)
+    # Fix linking on 10.14+. See https://stackoverflow.com/questions/54068035
+    link_directories(/usr/local/lib)
+ENDIF()
+
+file(GLOB OPENCVSHARP_FILES *.cpp)
+message(STATUS ${OPENCVSHARP_FILES})
+
 find_package(OpenCV REQUIRED)
 
 if(OpenCV_FOUND)
@@ -27,6 +40,7 @@ if(OpenCV_FOUND)
 
 	if(NOT WITH_opencv_aruco)
 	list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/aruco.cpp$")
+        list(FILTER OPENCVSHARP_FILES EXCLUDE REGEX ".*/caruco.cpp$")
 	add_definitions(-DWITHOUT_ARUCO)
 	message(STATUS "Disable opencv_aruco module")
 	endif()
@@ -102,10 +116,12 @@ if(OpenCV_FOUND)
 	add_definitions(-DWITHOUT_XPHOTO)
 	message(STATUS "Disable opencv_xphoto module")
 	endif()
+
+        message(STATUS ${OPENCVSHARP_FILES})
+
 	
 	include_directories(${OpenCV_INCLUDE_DIRS})
 	#set(LIBS ${LIBS} ${OpenCV_LIBRARIES})
-
 
 	if(CMAKE_GENERATOR MATCHES "Visual Studio")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
@@ -122,6 +138,23 @@ if(OpenCV_FOUND)
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static
 	)
+
+	set(CMAKE_PROJECT_NAME "opencvsharpextern")
+	set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
+	set(CPACK_GENERATOR "DEB")
+	set(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
+	set(CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
+	set(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
+	set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+	SET(CPACK_PACKAGE_DESCRIPTION "OpenCvSharp wrapper")
+	SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
+	SET(CPACK_PACKAGE_VENDOR "Sunwind")
+	SET(CPACK_PACKAGE_CONTACT "sunwind.su")
+	SET(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}.${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+	SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}.${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+#	SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA ${CMAKE_SOURCE_DIR}/DEBIAN/postinst ${CMAKE_SOURCE_DIR}/DEBIAN/preinst ${CMAKE_SOURCE_DIR}/DEBIAN/prerm)
+	include(CPack)
+
 else(OpenCV_FOUND)
 	message(FATAL_ERROR "OpenCv not found!")
 endif(OpenCV_FOUND)

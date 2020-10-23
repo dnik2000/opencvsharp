@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+#pragma warning disable CA1051
+
 namespace OpenCvSharp
 {
     /// <summary>
@@ -8,6 +10,7 @@ namespace OpenCvSharp
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
+    // ReSharper disable once InconsistentNaming
     public struct Vec2f : IVec<float>, IEquatable<Vec2f>
     {
         /// <summary>
@@ -18,6 +21,15 @@ namespace OpenCvSharp
         /// The value of the second component of this object.
         /// </summary>
         public float Item1;
+
+#if !DOTNET_FRAMEWORK
+        /// <summary>
+        /// Deconstructing a Vector
+        /// </summary>
+        /// <param name="item0"></param>
+        /// <param name="item1"></param>
+        public void Deconstruct(out float item0, out float item1) => (item0, item1) = (Item0, Item1);
+#endif
 
         /// <summary>
         /// Initializer
@@ -74,10 +86,10 @@ namespace OpenCvSharp
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is Vec2f && Equals((Vec2f) obj);
+            if (obj is null) return false;
+            return obj is Vec2f v && Equals(v);
         }
 
         /// <summary>
@@ -112,6 +124,12 @@ namespace OpenCvSharp
             {
                 return (Item0.GetHashCode() * 397) ^ Item1.GetHashCode();
             }
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{GetType().Name} ({Item0}, {Item1})";
         }
     }
 }

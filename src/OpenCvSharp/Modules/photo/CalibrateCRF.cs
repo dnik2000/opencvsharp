@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using OpenCvSharp.Util;
+using System.Linq;
 
 namespace OpenCvSharp
 {
     /// <summary>
     /// The base class for camera response calibration algorithms.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public abstract class CalibrateCRF : Algorithm
     {
         /// <summary>
@@ -25,12 +26,13 @@ namespace OpenCvSharp
                 throw new ArgumentNullException(nameof(times));
             dst.ThrowIfNotReady();
 
-            IntPtr[] srcArray = EnumerableEx.SelectPtrs(src);
-            float[] timesArray = EnumerableEx.ToArray(times);
+            var srcArray = src.Select(x => x.CvPtr).ToArray();
+            var timesArray = times.ToArray();
             if (srcArray.Length != timesArray.Length)
                 throw new OpenCvSharpException("src.Count() != times.Count");
 
-            NativeMethods.photo_CalibrateCRF_process(ptr, srcArray, srcArray.Length, dst.CvPtr, timesArray);
+            NativeMethods.HandleException(
+                NativeMethods.photo_CalibrateCRF_process(ptr, srcArray, srcArray.Length, dst.CvPtr, timesArray));
 
             dst.Fix();
             GC.KeepAlive(this);

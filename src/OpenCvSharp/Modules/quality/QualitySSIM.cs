@@ -1,5 +1,8 @@
 ﻿using System;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+
 namespace OpenCvSharp.Quality
 {
     /// <summary>
@@ -13,7 +16,6 @@ namespace OpenCvSharp.Quality
         /// Creates instance by raw pointer
         /// </summary>
         protected QualitySSIM(IntPtr p)
-            : base()
         {
             ptrObj = new Ptr(p);
             ptr = ptrObj.Get();
@@ -30,7 +32,8 @@ namespace OpenCvSharp.Quality
                 throw new ArgumentNullException(nameof(@ref));
             @ref.ThrowIfDisposed();
 
-            var ptr = NativeMethods.quality_createQualitySSIM(@ref.CvPtr);
+            NativeMethods.HandleException(
+                NativeMethods.quality_createQualitySSIM(@ref.CvPtr, out var ptr));
             GC.KeepAlive(@ref);
             return new QualitySSIM(ptr);
         }
@@ -52,7 +55,9 @@ namespace OpenCvSharp.Quality
             cmp.ThrowIfDisposed();
             qualityMap?.ThrowIfNotReady();
 
-            var ret = NativeMethods.quality_QualitySSIM_staticCompute(@ref.CvPtr, cmp.CvPtr, qualityMap?.CvPtr ?? IntPtr.Zero);
+            NativeMethods.HandleException(
+                NativeMethods.quality_QualitySSIM_staticCompute(
+                    @ref.CvPtr, cmp.CvPtr, qualityMap?.CvPtr ?? IntPtr.Zero, out var ret));
 
             GC.KeepAlive(@ref);
             GC.KeepAlive(cmp);
@@ -78,14 +83,16 @@ namespace OpenCvSharp.Quality
 
             public override IntPtr Get()
             {
-                var res = NativeMethods.quality_Ptr_QualitySSIM_get(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.quality_Ptr_QualitySSIM_get(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
 
             protected override void DisposeUnmanaged()
             {
-                NativeMethods.quality_Ptr_QualitySSIM_delete(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.quality_Ptr_QualitySSIM_delete(ptr));
                 base.DisposeUnmanaged();
             }
         }

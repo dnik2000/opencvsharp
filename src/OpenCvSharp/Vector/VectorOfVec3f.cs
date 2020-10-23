@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using OpenCvSharp.Util;
 
@@ -8,6 +9,7 @@ namespace OpenCvSharp
     /// <summary>
     /// 
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public class VectorOfVec3f : DisposableCvObject, IStdVector<Vec3f>
     {
         /// <summary>
@@ -37,7 +39,7 @@ namespace OpenCvSharp
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
-            Vec3f[] array = EnumerableEx.ToArray(data);
+            var array = data.ToArray();
             ptr = NativeMethods.vector_Vec3f_new3(array, new IntPtr(array.Length));
         }
 
@@ -92,21 +94,19 @@ namespace OpenCvSharp
         /// <returns></returns>
         public T[] ToArray<T>() where T : unmanaged
         {
-            int typeSize = MarshalHelper.SizeOf<T>();
+            var typeSize = Marshal.SizeOf<T>();
             if (typeSize != sizeof (float)*3)
-            {
-                throw new OpenCvSharpException();
-            }
+                throw new OpenCvSharpException($"Unsupported type '{typeof(T)}'");
 
-            int arySize = Size;
+            var arySize = Size;
             if (arySize == 0)
             {
-                return new T[0];
+                return Array.Empty<T>();
             }
-            T[] dst = new T[arySize];
+            var dst = new T[arySize];
             using (var dstPtr = new ArrayAddress1<T>(dst))
             {
-                MemoryHelper.CopyMemory(dstPtr, ElemPtr, typeSize*dst.Length);
+                MemoryHelper.CopyMemory(dstPtr.Pointer, ElemPtr, typeSize*dst.Length);
             }
             GC.KeepAlive(this); // ElemPtr is IntPtr to memory held by this object, so
                                 // make sure we are not disposed until finished with copy.

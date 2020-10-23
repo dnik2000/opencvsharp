@@ -1,5 +1,9 @@
 ﻿using System;
 using OpenCvSharp.ML;
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 namespace OpenCvSharp.Quality
 {
@@ -19,7 +23,6 @@ namespace OpenCvSharp.Quality
         /// Creates instance by raw pointer
         /// </summary>
         protected QualityBRISQUE(IntPtr p)
-            : base()
         {
             ptrObj = new Ptr(p);
             ptr = ptrObj.Get();
@@ -38,7 +41,8 @@ namespace OpenCvSharp.Quality
             if (string.IsNullOrEmpty(rangeFilePath))
                 throw new ArgumentNullException(nameof(rangeFilePath));
 
-            var ptr = NativeMethods.quality_createQualityBRISQUE1(modelFilePath, rangeFilePath);
+            NativeMethods.HandleException(
+                NativeMethods.quality_createQualityBRISQUE1(modelFilePath, rangeFilePath, out var ptr));
             return new QualityBRISQUE(ptr);
         }
 
@@ -57,7 +61,8 @@ namespace OpenCvSharp.Quality
             model.ThrowIfDisposed();
             range.ThrowIfDisposed();
 
-            var ptr = NativeMethods.quality_createQualityBRISQUE2(model.CvPtr, range.CvPtr);
+            NativeMethods.HandleException(
+                NativeMethods.quality_createQualityBRISQUE2(model.CvPtr, range.CvPtr, out var ptr));
             GC.KeepAlive(model);
             GC.KeepAlive(range);
             return new QualityBRISQUE(ptr);
@@ -80,7 +85,8 @@ namespace OpenCvSharp.Quality
                 throw new ArgumentNullException(nameof(rangeFilePath));
             img.ThrowIfDisposed();
 
-            var ret = NativeMethods.quality_QualityBRISQUE_staticCompute(img.CvPtr, modelFilePath, rangeFilePath);
+            NativeMethods.HandleException(
+                NativeMethods.quality_QualityBRISQUE_staticCompute(img.CvPtr, modelFilePath, rangeFilePath, out var ret));
 
             GC.KeepAlive(img);
             return ret;
@@ -98,7 +104,8 @@ namespace OpenCvSharp.Quality
             if (features == null)
                 throw new ArgumentNullException(nameof(features));
 
-            NativeMethods.quality_QualityBRISQUE_computeFeatures(img.CvPtr, features.CvPtr);
+            NativeMethods.HandleException(
+                NativeMethods.quality_QualityBRISQUE_computeFeatures(img.CvPtr, features.CvPtr));
 
             GC.KeepAlive(img);
             GC.KeepAlive(features);
@@ -122,14 +129,16 @@ namespace OpenCvSharp.Quality
 
             public override IntPtr Get()
             {
-                var res = NativeMethods.quality_Ptr_QualityBRISQUE_get(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.quality_Ptr_QualityBRISQUE_get(ptr, out var ret));
                 GC.KeepAlive(this);
-                return res;
+                return ret;
             }
 
             protected override void DisposeUnmanaged()
             {
-                NativeMethods.quality_Ptr_QualityBRISQUE_delete(ptr);
+                NativeMethods.HandleException(
+                    NativeMethods.quality_Ptr_QualityBRISQUE_delete(ptr));
                 base.DisposeUnmanaged();
             }
         }
